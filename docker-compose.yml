@@ -1,6 +1,7 @@
 services:
   notes-app:
-    image: my-notes-app:latest
+    #image: my-notes-app:latest
+    image: manish12588/my-notes-app:latest
     build:
       context: .
       dockerfile: docker/Dockerfile.multistage

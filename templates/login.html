@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+{% block title %}Login · NoteVault{% endblock %}
+
+{% block content %}
+<div class="auth-page">
+  <div class="auth-deco">
+    <div class="deco-text">YOUR<br/>NOTES<br/>AWAIT</div>
+    <div class="deco-lines">
+      <span></span><span></span><span></span><span></span><span></span>
+    </div>
+  </div>
+
+  <div class="auth-card">
+    <div class="auth-header">
+      <div class="auth-brand">◈ NoteVault</div>
+      <h1 class="auth-title">Welcome back</h1>
+      <p class="auth-sub">Log in to access your private notes.</p>
+    </div>
+
+    <form action="{{ url_for('login') }}" method="post" class="auth-form" novalidate>
+      <div class="form-group">
+        <label for="identifier">Username or Email</label>
+        <div class="input-wrap">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          <input type="text" id="identifier" name="identifier" placeholder="your_username or email"
+                 value="{{ request.form.get('identifier','') }}" autocomplete="username" required autofocus/>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="password">Password</label>
+        <div class="input-wrap">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          <input type="password" id="password" name="password" placeholder="Your password" autocomplete="current-password" required/>
+        </div>
+      </div>
+
+      <label class="checkbox-label">
+        <input type="checkbox" name="remember"/>
+        <span class="checkbox-custom"></span>
+        Remember me for 30 days
+      </label>
+
+      <button type="submit" class="btn-submit">
+        Log In
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </button>
+    </form>
+
+    <p class="auth-switch">Don't have an account? <a href="{{ url_for('register') }}">Create one</a></p>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+{% block title %}New Note · NoteVault{% endblock %}
+
+{% block content %}
+<div class="editor-page">
+  <div class="editor-header">
+    <a href="{{ url_for('index') }}" class="back-link">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+      Back to notes
+    </a>
+    <h1 class="editor-page-title">New Note</h1>
+  </div>
+
+  <form action="{{ url_for('add_note') }}" method="post" class="note-form">
+    <div class="form-top">
+      <div class="form-group form-group-title">
+        <input type="text" name="title" id="title" class="title-input"
+               placeholder="Note title…" value="{{ request.form.get('title','') }}" autofocus/>
+      </div>
+    </div>
+
+    <div class="form-mid">
+      <div class="form-group flex-1">
+        <label>Category</label>
+        <div class="cat-row">
+          <select name="category" class="form-select">
+            <option value="">— None —</option>
+            {% for cat in categories %}
+            <option value="{{ cat }}" {% if request.form.get('category')==cat %}selected{% endif %}>{{ cat }}</option>
+            {% endfor %}
+          </select>
+          <span class="cat-or">or</span>
+          <input type="text" name="new_category" class="form-input"
+                 placeholder="Create new category…" value="{{ request.form.get('new_category','') }}"/>
+        </div>
+      </div>
+      <label class="pin-label">
+        <input type="checkbox" name="pinned" {% if request.form.get('pinned') %}checked{% endif %}/>
+        <span class="pin-toggle">📌 Pin this note</span>
+      </label>
+    </div>
+
+    <div class="form-group form-group-content">
+      <label>Content</label>
+      <textarea name="content" id="content" class="content-textarea"
+                placeholder="Write your notes here…&#10;&#10;Tips:&#10;• Use # for headings, - for bullets&#10;• Separate ideas with blank lines&#10;• Mark KEY TERMS in capitals">{{ request.form.get('content','') }}</textarea>
+      <div class="textarea-footer">
+        <span id="wc">0 words</span>
+        <span id="cc">0 chars</span>
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <a href="{{ url_for('index') }}" class="btn-cancel">Cancel</a>
+      <button type="submit" class="btn-primary">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+        Save Note
+      </button>
+    </div>
+  </form>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  const ta = document.getElementById('content');
+  const wc = document.getElementById('wc');
+  const cc = document.getElementById('cc');
+  function updateCount() {
+    const t = ta.value;
+    wc.textContent = (t.trim() ? t.trim().split(/\s+/).length : 0) + ' words';
+    cc.textContent = t.length + ' chars';
+  }
+  ta.addEventListener('input', updateCount);
+  updateCount();
+</script>
+{% endblock %}

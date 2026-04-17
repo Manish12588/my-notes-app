@@ -1,0 +1,99 @@
+{% extends 'base.html' %}
+{% block title %}My Notes · NoteVault{% endblock %}
+
+{% block content %}
+<div class="dashboard">
+
+  <!-- Sidebar -->
+  <aside class="dash-sidebar">
+    <div class="sidebar-section">
+      <p class="sidebar-label">Filter</p>
+      <a href="{{ url_for('index') }}" class="sidebar-link {% if not active_category and not pinned_only %}active{% endif %}">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+        All Notes
+        <span class="sidebar-badge">{{ notes|length if not active_category and not pinned_only else '' }}</span>
+      </a>
+      <a href="{{ url_for('index', pinned='1') }}" class="sidebar-link {% if pinned_only %}active{% endif %}">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+        Pinned
+      </a>
+    </div>
+
+    {% if categories %}
+    <div class="sidebar-section">
+      <p class="sidebar-label">Categories</p>
+      {% for cat in categories %}
+      <a href="{{ url_for('index', category=cat) }}" class="sidebar-link {% if active_category == cat %}active{% endif %}">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
+        {{ cat }}
+      </a>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    <div class="sidebar-section">
+      <a href="{{ url_for('add_note') }}" class="btn-sidebar-new">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
+        New Note
+      </a>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <section class="dash-main">
+    <div class="dash-header">
+      <div class="dash-title-row">
+        <h1 class="dash-title">
+          {% if pinned_only %}Pinned Notes
+          {% elif active_category %}{{ active_category }}
+          {% elif search %}Results for "{{ search }}"
+          {% else %}All Notes{% endif %}
+        </h1>
+        <span class="dash-count">{{ notes|length }} note{{ 's' if notes|length != 1 }}</span>
+      </div>
+      {% if search or active_category or pinned_only %}
+      <a href="{{ url_for('index') }}" class="clear-filter">✕ Clear filter</a>
+      {% endif %}
+    </div>
+
+    {% if notes %}
+    <div class="notes-grid">
+      {% for note in notes %}
+      <article class="note-card {% if note.pinned %}is-pinned{% endif %}">
+        {% if note.pinned %}<div class="pin-badge">📌</div>{% endif %}
+        <a href="{{ url_for('view_note', note_id=note.id) }}" class="card-link">
+          <h2 class="card-title">{{ note.title }}</h2>
+          <p class="card-preview">{{ note.content[:130] }}{% if note.content|length > 130 %}…{% endif %}</p>
+        </a>
+        <div class="card-footer">
+          <div class="card-meta">
+            {% if note.category %}<span class="card-cat">{{ note.category }}</span>{% endif %}
+            <span class="card-date">{{ note.updated_at }}</span>
+          </div>
+          <div class="card-actions">
+            <a href="{{ url_for('edit_note', note_id=note.id) }}" class="card-btn" title="Edit">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+            </a>
+            <form action="{{ url_for('delete_note', note_id=note.id) }}" method="post"
+                  onsubmit="return confirm('Delete this note?')">
+              <button class="card-btn card-btn-del" title="Delete">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6"/></svg>
+              </button>
+            </form>
+          </div>
+        </div>
+      </article>
+      {% endfor %}
+    </div>
+
+    {% else %}
+    <div class="empty-state">
+      <div class="empty-icon">◈</div>
+      <h2>No notes found</h2>
+      <p>{% if search %}No results for "{{ search }}". {% endif %}Start by creating a new note.</p>
+      <a href="{{ url_for('add_note') }}" class="btn-primary">Create your first note</a>
+    </div>
+    {% endif %}
+  </section>
+</div>
+{% endblock %}

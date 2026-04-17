@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+{% block title %}Create Account · NoteVault{% endblock %}
+
+{% block content %}
+<div class="auth-page">
+  <div class="auth-deco">
+    <div class="deco-text">LEARN<br/>THINK<br/>GROW</div>
+    <div class="deco-lines">
+      <span></span><span></span><span></span><span></span><span></span>
+    </div>
+  </div>
+
+  <div class="auth-card">
+    <div class="auth-header">
+      <a href="{{ url_for('login') }}" class="auth-back">← Back to login</a>
+      <div class="auth-brand">◈ NoteVault</div>
+      <h1 class="auth-title">Create your account</h1>
+      <p class="auth-sub">Join and start building your private knowledge base.</p>
+    </div>
+
+    <form action="{{ url_for('register') }}" method="post" class="auth-form" novalidate>
+      <div class="form-group">
+        <label for="username">Username</label>
+        <div class="input-wrap">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          <input type="text" id="username" name="username" placeholder="e.g. john_doe"
+                 value="{{ request.form.get('username','') }}" autocomplete="username" required/>
+        </div>
+        <small>At least 3 characters, no spaces.</small>
+      </div>
+
+      <div class="form-group">
+        <label for="email">Email address</label>
+        <div class="input-wrap">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+          <input type="email" id="email" name="email" placeholder="you@example.com"
+                 value="{{ request.form.get('email','') }}" autocomplete="email" required/>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="password">Password</label>
+          <div class="input-wrap">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            <input type="password" id="password" name="password" placeholder="Min. 6 chars" autocomplete="new-password" required/>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="confirm">Confirm password</label>
+          <div class="input-wrap">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4"/><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            <input type="password" id="confirm" name="confirm" placeholder="Repeat password" autocomplete="new-password" required/>
+          </div>
+        </div>
+      </div>
+
+      <button type="submit" class="btn-submit">
+        Create Account
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </button>
+    </form>
+
+    <p class="auth-switch">Already have an account? <a href="{{ url_for('login') }}">Log in</a></p>
+  </div>
+</div>
+{% endblock %}

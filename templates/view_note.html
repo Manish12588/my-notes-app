@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+{% block title %}{{ note.title }} · NoteVault{% endblock %}
+
+{% block content %}
+<div class="view-page">
+  <div class="view-topbar">
+    <a href="{{ url_for('index') }}" class="back-link">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+      All Notes
+    </a>
+    <div class="view-actions">
+      <button class="btn-pin-toggle {% if note.pinned %}is-pinned{% endif %}"
+              data-id="{{ note.id }}" title="{{ 'Unpin' if note.pinned else 'Pin' }}">
+        {% if note.pinned %}📌 Pinned{% else %}☆ Pin{% endif %}
+      </button>
+      <a href="{{ url_for('edit_note', note_id=note.id) }}" class="btn-edit">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+        Edit
+      </a>
+      <form action="{{ url_for('delete_note', note_id=note.id) }}" method="post"
+            onsubmit="return confirm('Delete this note?')">
+        <button class="btn-del">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/></svg>
+          Delete
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <article class="view-article">
+    <div class="view-meta">
+      {% if note.category %}
+      <span class="view-cat">{{ note.category }}</span>
+      {% endif %}
+      {% if note.pinned %}<span class="view-pinned-badge">📌 Pinned</span>{% endif %}
+    </div>
+
+    <h1 class="view-title">{{ note.title }}</h1>
+
+    <div class="view-dates">
+      <span>Created {{ note.created_at }}</span>
+      <span class="dates-sep">·</span>
+      <span>Updated {{ note.updated_at }}</span>
+    </div>
+
+    <div class="view-divider"></div>
+
+    <div class="view-content">{{ note.content }}</div>
+  </article>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  document.querySelector('.btn-pin-toggle')?.addEventListener('click', async function() {
+    const id = this.dataset.id;
+    const res = await fetch(`/note/${id}/pin`, { method: 'POST' });
+    const data = await res.json();
+    this.classList.toggle('is-pinned', data.pinned);
+    this.textContent = data.pinned ? '📌 Pinned' : '☆ Pin';
+  });
+</script>
+{% endblock %}

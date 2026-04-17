@@ -1,0 +1,88 @@
+{% extends 'base.html' %}
+{% block title %}Edit · {{ note.title }} · NoteVault{% endblock %}
+
+{% block content %}
+<div class="editor-page">
+  <div class="editor-header">
+    <a href="{{ url_for('view_note', note_id=note.id) }}" class="back-link">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+      Back to note
+    </a>
+    <h1 class="editor-page-title">Edit Note</h1>
+  </div>
+
+  <form action="{{ url_for('edit_note', note_id=note.id) }}" method="post" class="note-form">
+    <div class="form-top">
+      <div class="form-group form-group-title">
+        <input type="text" name="title" id="title" class="title-input"
+               placeholder="Note title…" value="{{ note.title }}" autofocus/>
+      </div>
+    </div>
+
+    <div class="form-mid">
+      <div class="form-group flex-1">
+        <label>Category</label>
+        <div class="cat-row">
+          <select name="category" class="form-select">
+            <option value="">— None —</option>
+            {% for cat in categories %}
+            <option value="{{ cat }}" {% if note.category == cat %}selected{% endif %}>{{ cat }}</option>
+            {% endfor %}
+          </select>
+          <span class="cat-or">or</span>
+          <input type="text" name="new_category" class="form-input" placeholder="Create new category…"/>
+        </div>
+      </div>
+      <label class="pin-label">
+        <input type="checkbox" name="pinned" {% if note.pinned %}checked{% endif %}/>
+        <span class="pin-toggle">📌 Pin this note</span>
+      </label>
+    </div>
+
+    <div class="form-group form-group-content">
+      <label>Content</label>
+      <textarea name="content" id="content" class="content-textarea"
+                placeholder="Write your notes here…">{{ note.content }}</textarea>
+      <div class="textarea-footer">
+        <span id="wc">0 words</span>
+        <span id="cc">0 chars</span>
+        <span class="last-edit">Last edited: {{ note.updated_at }}</span>
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <form action="{{ url_for('delete_note', note_id=note.id) }}" method="post"
+            onsubmit="return confirm('Delete this note permanently?')" style="margin:0">
+        <button type="submit" class="btn-danger">Delete Note</button>
+      </form>
+      <div class="actions-right">
+        <a href="{{ url_for('view_note', note_id=note.id) }}" class="btn-cancel">Cancel</a>
+        <button type="submit" class="btn-primary" form="">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+          Update Note
+        </button>
+      </div>
+    </div>
+  </form>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  const ta = document.getElementById('content');
+  const wc = document.getElementById('wc');
+  const cc = document.getElementById('cc');
+  function updateCount() {
+    const t = ta.value;
+    wc.textContent = (t.trim() ? t.trim().split(/\s+/).length : 0) + ' words';
+    cc.textContent = t.length + ' chars';
+  }
+  ta.addEventListener('input', updateCount);
+  updateCount();
+
+  // Fix delete form submission — it's outside the edit form
+  const editForm  = document.querySelector('.note-form');
+  const saveBtn   = document.querySelector('.btn-primary[form=""]');
+  if (saveBtn) saveBtn.addEventListener('click', e => { e.preventDefault(); editForm.submit(); });
+</script>
+{% endblock %}

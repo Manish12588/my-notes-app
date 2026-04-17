@@ -1,0 +1,14 @@
+services:
+  notes-app:
+    image: my-notes-app:latest
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.multistage
+    container_name: docker-notes-app
+    ports:
+      - 5000:5000
+    volumes:
+      - ./instance:/app/instance
+    environment:
+      - PYTHONUNBUFFERED=1
+    restart: unless-stopped

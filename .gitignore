@@ -1,0 +1,48 @@
+# ── Python ──────────────────────────────────
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pyc
+.Python
+
+# ── Virtual Environment ──────────────────────
+venv/
+env/
+.venv/
+ENV/
+
+# ── Flask / SQLite ───────────────────────────
+instance/
+*.db
+*.sqlite
+*.sqlite3
+
+# ── Environment Variables ────────────────────
+.env
+.env.local
+.env.production
+
+# ── Docker ───────────────────────────────────
+docker/Dockerfile.multistage  # keep only if you don't want it tracked
+
+# ── IDE / Editors ────────────────────────────
+.idea/
+.vscode/
+*.iml
+*.suo
+*.user
+
+# ── OS Files ─────────────────────────────────
+.DS_Store           # Mac
+Thumbs.db           # Windows
+desktop.ini         # Windows
+
+# ── Logs ─────────────────────────────────────
+*.log
+logs/
+
+# ── Testing ──────────────────────────────────
+.pytest_cache/
+.coverage
+htmlcov/

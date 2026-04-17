@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>{% block title %}NoteVault{% endblock %}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}"/>
+  {% block head %}{% endblock %}
+</head>
+<body>
+
+  {% if current_user.is_authenticated %}
+  <nav class="navbar">
+    <div class="nav-inner">
+      <a href="{{ url_for('index') }}" class="nav-brand">
+        <span class="brand-icon">◈</span>
+        <span class="brand-text">NoteVault</span>
+      </a>
+
+      <div class="nav-center">
+        <form action="{{ url_for('index') }}" method="get" class="nav-search">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+          <input type="text" name="q" value="{{ request.args.get('q','') }}" placeholder="Search your notes…"/>
+        </form>
+      </div>
+
+      <div class="nav-right">
+        <a href="{{ url_for('add_note') }}" class="btn-nav-new">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
+          New Note
+        </a>
+        <div class="nav-user">
+          <div class="user-avatar">{{ current_user.username[0].upper() }}</div>
+          <span class="user-name">{{ current_user.username }}</span>
+        </div>
+        <a href="{{ url_for('logout') }}" class="btn-logout" title="Logout">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg>
+        </a>
+      </div>
+    </div>
+  </nav>
+  {% endif %}
+
+  <div class="flash-container">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% for category, message in messages %}
+        <div class="flash flash-{{ category }}">
+          <span>{{ message }}</span>
+          <button onclick="this.parentElement.remove()" class="flash-close">✕</button>
+        </div>
+      {% endfor %}
+    {% endwith %}
+  </div>
+
+  <main class="main-content">
+    {% block content %}{% endblock %}
+  </main>
+
+  {% if current_user.is_authenticated %}
+  <footer class="footer">
+    <div class="footer-inner">
+      <span class="footer-brand">◈ NoteVault</span>
+      <span class="footer-copy">Your private knowledge base</span>
+    </div>
+  </footer>
+  {% endif %}
+
+  <script>
+    // Auto-dismiss flash messages
+    setTimeout(() => {
+      document.querySelectorAll('.flash').forEach(el => el.style.opacity = '0');
+      setTimeout(() => document.querySelectorAll('.flash').forEach(el => el.remove()), 400);
+    }, 4000);
+  </script>
+  {% block scripts %}{% endblock %}
+</body>
+</html>

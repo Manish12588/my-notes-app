@@ -1,0 +1,4 @@
+-r requirements.txt     # ✅ includes all production deps too
+flake8
+bandit
+pytest

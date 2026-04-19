@@ -1,13 +1,14 @@
 venv/
-.idea/
 __pycache__/
 *.pyc
 *.pyo
 *.pyd
+.idea/
+.vscode/
 instance/
 *.db
+.env
+.env.*
 .git/
 .gitignore
 *.md
-docker/
-.env

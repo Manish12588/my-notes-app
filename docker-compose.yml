@@ -1,15 +1,31 @@
 services:
   notes-app:
-    #image: my-notes-app:latest
     image: manish12588/my-notes-app:latest
     build:
       context: .
       dockerfile: docker/Dockerfile.multistage
     container_name: docker-notes-app
     ports:
-      - 5000:5000
+      - "5000:5000"
     volumes:
-      - ./instance:/app/instance
+      - notes-data:/app/instance        
     environment:
       - PYTHONUNBUFFERED=1
+      - SECRET_KEY=${SECRET_KEY}         
+      - FLASK_ENV=production             
     restart: unless-stopped
+    healthcheck:                         
+      test: ["CMD", "wget", "-qO-", "http://localhost:5000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    networks:
+      - notes-network                    
+
+volumes:
+  notes-data:                         
+
+networks:
+  notes-network:
+    driver: bridge

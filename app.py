@@ -7,8 +7,13 @@ from models import db, User, Note
 
 # ── App setup ──────────────────────────────────────────────────────────────
 app = Flask(__name__)
-app.config['SECRET_KEY']                  = os.environ.get('SECRET_KEY', 'dev-secret-change-me')
-app.config['SQLALCHEMY_DATABASE_URI']     = 'sqlite:///notes.db'
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'dev-secret-change-me')
+
+BASE_DIR     = os.path.abspath(os.path.dirname(__file__))
+INSTANCE_DIR = os.path.join(BASE_DIR, 'instance')
+os.makedirs(INSTANCE_DIR, exist_ok=True)
+
+app.config['SQLALCHEMY_DATABASE_URI']        = f'sqlite:///{os.path.join(INSTANCE_DIR, "notes.db")}'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db.init_app(app)
@@ -25,7 +30,7 @@ def load_user(user_id):
 
 
 with app.app_context():
-    db.create_all()
+     db.metadata.create_all(bind=db.engine, checkfirst=True)
 
 
 # ── Auth routes ────────────────────────────────────────────────────────────
@@ -217,7 +222,9 @@ def toggle_pin(note_id):
     db.session.commit()
     return jsonify({'pinned': note.pinned})
 
-
+@app.route('/health')
+def health():
+    return jsonify({'status': 'ok'}), 200
 # ── Run ────────────────────────────────────────────────────────────────────
 
 if __name__ == '__main__':

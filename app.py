@@ -222,6 +222,7 @@ def toggle_pin(note_id):
     db.session.commit()
     return jsonify({'pinned': note.pinned})
 
+
 @app.route('/health')
 def health():
     return jsonify({'status': 'ok'}), 200

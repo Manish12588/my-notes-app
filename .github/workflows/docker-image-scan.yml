@@ -2,8 +2,8 @@
 name: Docker Image Scanner
 
 on: 
-    #workflow_call:
-    workflow_dispatch:
+    workflow_call:
+    #workflow_dispatch:
       
 permissions:
   contents: read

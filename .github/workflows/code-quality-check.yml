@@ -26,10 +26,7 @@ jobs:
 
       - name: Install dependencies
         run: pip install -r requirements-dev.txt
-      
-      - name: Auto-fix PEP8 issues
-        run: autopep8 --in-place app.py
-      
+
       - name: run linter
         run: python -m flake8 app.py 
 

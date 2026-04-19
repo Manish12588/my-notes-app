@@ -1,4 +1,4 @@
-# Python
+# ── Python ──────────────────────────────
 __pycache__/
 *.pyc
 *.pyo
@@ -6,38 +6,30 @@ __pycache__/
 .Python
 *.egg-info/
 
-# Virtual environments
+# ── Virtual environments ─────────────────
 venv/
 .venv/
 env/
 
-# Database files (don't bake DB into image!)
+# ── Database files ───────────────────────
 *.db
 *.sqlite3
 instance/
 
-# Environment & secrets
+# ── Environment & secrets ────────────────
 .env
 .env.*
-instance/
-*.db
 
-# Dev/IDE files
+# ── Dev/IDE files ────────────────────────
 .git/
-.gitignore
 .vscode/
 .idea/
 
-# Docker files themselves
-Dockerfile*
-docker-compose*.yml
-
-# SSH Keys — never commit private keys
+# ── SSH Keys ─────────────────────────────
 *.pem
 *.key
-terraform/terra-automate-key.pem
 
-# ── Terraform ───────────────────────────
+# ── Terraform ────────────────────────────
 **/.terraform/*
 *.tfstate
 *.tfstate.*
@@ -46,18 +38,8 @@ terraform/terra-automate-key.pem
 crash.log
 crash.*.log
 
-# Ansible
+# ── Ansible ──────────────────────────────
 ansible/inventory.ini
 
+# ── Misc ─────────────────────────────────
 notes-error.txt
-
-
---------------- git command ------
-
-git ls-files | Select-String "inventory"
-git rm --cached ansible/inventory.ini
-git add .gitignore
-git commit -m "fix: add inventory.ini to gitignore, untrack it"
-git push origin main
------
-

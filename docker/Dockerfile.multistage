@@ -9,7 +9,7 @@ RUN apk add --no-cache \
     musl-dev=1.2.5-r23 \
     libffi-dev=3.5.2-r0
 
-COPY requirements.txt .
+COPY app/requirements.txt .
 
 # Install into isolated prefix so we can copy cleanly to final stage
 RUN pip install --no-cache-dir --prefix=/install -r requirements.txt
@@ -24,7 +24,7 @@ WORKDIR /app
 COPY --from=builder /install /usr/local
 
 # Copy only application source (not junk files — see .dockerignore)
-COPY . .
+COPY app/ .
 
 # Create user + instance dir with correct ownership in one layer
 RUN adduser -D appuser && \

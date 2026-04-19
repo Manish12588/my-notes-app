@@ -1,14 +1,49 @@
+# ── Python ──────────────────────────────
 venv/
 __pycache__/
 *.pyc
 *.pyo
 *.pyd
+
+# ── IDE ──────────────────────────────────
 .idea/
 .vscode/
+
+# ── Database ─────────────────────────────
 instance/
+app/instance/
 *.db
+*.sqlite3
+
+# ── Secrets ──────────────────────────────
 .env
 .env.*
+
+# ── Git ──────────────────────────────────
 .git/
 .gitignore
+
+# ── Terraform ────────────────────────────
+terraform/
+**/.terraform/*
+*.tfstate
+*.tfstate.*
+*.tfvars
+*.tfvars.json
+crash.log
+crash.*.log
+
+# ── Ansible ──────────────────────────────
+ansible/
+
+# ── SSH Keys ─────────────────────────────
+*.pem
+*.key
+
+# ── CI/CD ────────────────────────────────
+.github/
+
+# ── Misc ─────────────────────────────────
 *.md
+notes-error.txt
+requirements-dev.txt                   # dev tools — not needed in image

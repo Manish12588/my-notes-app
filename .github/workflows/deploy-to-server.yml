@@ -8,7 +8,7 @@ permissions:
   contents: read
 
 jobs:
-  provision:
+  infra:
     runs-on: ubuntu-latest
     outputs:
       ec2_ip: ${{ steps.tf_output.outputs.ec2_ip }}
@@ -47,8 +47,8 @@ jobs:
           echo "ec2_ip=$(terraform output -raw app_server_ip)" >> $GITHUB_OUTPUT
         working-directory: terraform/
 
-  configure:
-    needs: provision
+  provision:
+    needs: infra
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -69,7 +69,7 @@ jobs:
         run: |
           cat > ansible/inventory.ini << EOF
           [app_servers]
-          ${{ needs.provision.outputs.ec2_ip }} ansible_user=ubuntu ansible_ssh_private_key_file=private_key.pem ansible_ssh_common_args='-o StrictHostKeyChecking=no'
+          ${{ needs.infra.outputs.ec2_ip }} ansible_user=ubuntu ansible_ssh_private_key_file=private_key.pem ansible_ssh_common_args='-o StrictHostKeyChecking=no'
           EOF
 
       - name: Verify EC2 reachable      # ✅ ping before running playbook
@@ -81,7 +81,7 @@ jobs:
           ansible-playbook -i ansible/inventory.ini ansible/playbook.yml
 
   deploy:
-    needs: [provision, configure]
+    needs: [infra, provision]
     runs-on: ubuntu-latest
     steps:
       - name: Write SSH private key
@@ -92,7 +92,7 @@ jobs:
       - name: Deploy to EC2
         uses: appleboy/ssh-action@v1.0.3
         with:
-          host: ${{ needs.provision.outputs.ec2_ip }}
+          host: ${{ needs.infra.outputs.ec2_ip }}
           username: ubuntu
           key: ${{ secrets.EC2_SSH_PRIVATE_KEY }}
           script: |
@@ -109,7 +109,7 @@ jobs:
               --restart always \
               -p 5000:5000 \
               -v my-notes-data:/app/instance \
-              -e SECRET_KEY=${{ secrets.SECRET_KEY }} \
+              -e SECRET_KEY="${{ secrets.SECRET_KEY }}" \
               ${{ secrets.DOCKERHUB_USERNAME }}/my-notes-app:${{ github.sha }}
 
             docker image prune -f
@@ -118,4 +118,4 @@ jobs:
       - name: Print App URL             # ✅ easy to find after deploy
         run: |
           echo "✅ App deployed successfully!"
-          echo "🌐 Access at: http://${{ needs.provision.outputs.ec2_ip }}:5000"
+          echo "🌐 Access at: http://${{ needs.infra.outputs.ec2_ip }}:5000"

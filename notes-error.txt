@@ -1,0 +1,6 @@
+1. code-quality-check.yml
+    1. Check you are in venv {viirutal environment}
+    2. pip install -r requirements-dev.txt
+    3. pip show bandit
+    4. python -m flake8 app.py
+    5. python -m bandit -r . --exclude ./venv

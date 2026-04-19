@@ -55,4 +55,9 @@ notes-error.txt
 --------------- git command ------
 
 git ls-files | Select-String "inventory"
+git rm --cached ansible/inventory.ini
+git add .gitignore
+git commit -m "fix: add inventory.ini to gitignore, untrack it"
+git push origin main
+-----
 

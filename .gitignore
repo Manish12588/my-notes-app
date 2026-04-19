@@ -36,3 +36,13 @@ docker-compose*.yml
 *.pem
 *.key
 terraform/terra-automate-key.pem
+
+# ── Terraform ───────────────────────────
+**/.terraform/*
+*.tfstate
+*.tfstate.*
+*.tfvars
+*.tfvars.json
+.terraform.lock.hcl
+crash.log
+crash.*.log

@@ -1,5 +1,5 @@
 # uses Trivy image scanner for CVEs - Docker Image
-name: Image Scanner
+name: Docker Image Scanner
 
 on: 
     #workflow_call:

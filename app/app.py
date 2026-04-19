@@ -3,7 +3,7 @@ from flask_login import LoginManager, login_user, logout_user, login_required, c
 from datetime import datetime
 import os
 
-from app.models import db, User, Note
+from models import db, User, Note
 
 # ── App setup ──────────────────────────────────────────────────────────────
 app = Flask(__name__)

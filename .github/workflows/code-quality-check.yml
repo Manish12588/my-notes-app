@@ -28,7 +28,7 @@ jobs:
         run: pip install -r requirements-dev.txt
       
       - name: run linter
-        run: flake8 app.py 
+        run: python -m flake8 app.py 
 
       - name: run SAST 
         run: bandit -r . --exclude ./venv

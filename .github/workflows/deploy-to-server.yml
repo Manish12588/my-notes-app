@@ -58,7 +58,25 @@ jobs:
         run: pip install ansible
 
       - name: Wait for EC2 SSH to be ready
-        run: sleep 60                   # ✅ increased — EC2 needs time to boot
+        run: |
+          echo "Waiting for EC2 to be ready..."
+          MAX_RETRIES=10
+          COUNT=0
+
+          until ssh -i private_key.pem \
+                    -o StrictHostKeyChecking=no \
+                    -o ConnectTimeout=5 \
+                    ubuntu@${{ needs.infra.outputs.ec2_ip }} "echo ready" 2>/dev/null; do
+            COUNT=$((COUNT + 1))
+            if [ $COUNT -ge $MAX_RETRIES ]; then
+              echo "❌ EC2 not ready after $MAX_RETRIES attempts"
+              exit 1
+            fi
+            echo "Attempt $COUNT/$MAX_RETRIES — retrying in 15s..."
+            sleep 15
+          done
+
+          echo "✅ EC2 is ready!"
 
       - name: Write SSH private key
         run: |

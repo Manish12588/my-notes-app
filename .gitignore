@@ -31,3 +31,8 @@ instance/
 # Docker files themselves
 Dockerfile*
 docker-compose*.yml
+
+# SSH Keys — never commit private keys
+*.pem
+*.key
+terraform/terra-automate-key.pem

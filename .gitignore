@@ -46,4 +46,13 @@ terraform/terra-automate-key.pem
 crash.log
 crash.*.log
 
+# Ansible
+ansible/inventory.ini
+
 notes-error.txt
+
+
+--------------- git command ------
+
+git ls-files | Select-String "inventory"
+

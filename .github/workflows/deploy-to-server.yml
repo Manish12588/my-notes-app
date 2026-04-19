@@ -57,6 +57,19 @@ jobs:
       - name: Install Ansible
         run: pip install ansible
 
+      - name: Write SSH private key
+        run: |
+          echo "${{ secrets.EC2_SSH_PRIVATE_KEY }}" > private_key.pem
+          chmod 600 private_key.pem
+      
+      - name: Wait for EC2 to be Running
+        run: |
+          echo "Checking EC2 instance state..."
+          aws ec2 wait instance-running \
+            --filters "Name=ip-address,Values=${{ needs.infra.outputs.ec2_ip }}" \
+            --region ap-south-1
+          echo "✅ EC2 instance state is = 'Running'"
+
       - name: Wait for EC2 SSH to be ready
         run: |
           echo "Waiting for EC2 to be ready..."
@@ -77,11 +90,6 @@ jobs:
           done
 
           echo "✅ EC2 is ready!"
-
-      - name: Write SSH private key
-        run: |
-          echo "${{ secrets.EC2_SSH_PRIVATE_KEY }}" > private_key.pem
-          chmod 600 private_key.pem
 
       - name: Generate Ansible inventory
         run: |

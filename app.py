@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, flash, jsonify, abort
+from flask import Flask, render_template, request, redirect, url_for, flash, jsonify
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from datetime import datetime
 import os
@@ -30,7 +30,7 @@ def load_user(user_id):
 
 
 with app.app_context():
-     db.metadata.create_all(bind=db.engine, checkfirst=True)
+    db.metadata.create_all(bind=db.engine, checkfirst=True)
 
 
 # ── Auth routes ────────────────────────────────────────────────────────────
@@ -225,6 +225,8 @@ def toggle_pin(note_id):
 @app.route('/health')
 def health():
     return jsonify({'status': 'ok'}), 200
+
+
 # ── Run ────────────────────────────────────────────────────────────────────
 
 if __name__ == '__main__':

@@ -38,4 +38,28 @@ JSON parsing error          →  use file://filename.json instead of inline JSON
 □ Commit only .pub file to repo
 □ Add *.pem to .gitignore
 
+terraform/
+├── backend.tf                  ✅ Remote state in S3
+├── ec2.tf                      ✅ EC2 + Security Groups + Key Pair
+├── variables.tf                ✅ AMI, instance type, region
+├── outputs.tf                  ✅ Dynamic EC2 IP output
+├── terra-automate-key.pub      ✅ Committed safely
+└── .terraform.lock.hcl         ✅ Provider versions locked
+
+AWS:
+✅ S3 bucket         → my-notes-app-tfstate (remote state)
+✅ EC2 instance      → my-notes-app-server (Ubuntu 24.04, t3.micro)
+✅ Security Groups   → ports 22, 80, 5000 open
+✅ Key Pair          → terra-automate-key
+✅ Default VPC       → used for networking
 ------------------------------------------------------------------------------------------------
+
+************* ANSIBLE ********************************************************
+
+Step 1 — Ansible         → configure EC2 (install Docker)
+Step 2 — Deploy workflow → pull image, run container
+Step 3 — Main pipeline   → wire all workflows together
+Step 4 — Test end-to-end → push code → auto deploy to EC2
+
+
+-------------------------------------------------------------------------------

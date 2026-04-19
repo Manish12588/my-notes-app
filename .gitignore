@@ -45,3 +45,5 @@ terraform/terra-automate-key.pem
 *.tfvars.json
 crash.log
 crash.*.log
+
+notes-error.txt

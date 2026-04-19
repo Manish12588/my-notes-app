@@ -1,0 +1,121 @@
+# this will deploy the safe / secure / tested app to Prod server
+name: Deploy To Server
+
+on:
+  workflow_call:
+
+permissions:
+  contents: read
+
+jobs:
+  provision:
+    runs-on: ubuntu-latest
+    outputs:
+      ec2_ip: ${{ steps.tf_output.outputs.ec2_ip }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS                             # ✅ static keys for now
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ap-south-1
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_wrapper: false
+
+      - name: Terraform Init
+        run: terraform init
+        working-directory: terraform/
+
+      - name: Terraform Plan            # ✅ always plan before apply
+        run: terraform plan
+        working-directory: terraform/
+
+      - name: Terraform Apply
+        run: terraform apply -auto-approve
+        working-directory: terraform/
+
+      - name: Get EC2 IP
+        id: tf_output
+        run: |
+          echo "ec2_ip=$(terraform output -raw app_server_ip)" >> $GITHUB_OUTPUT
+        working-directory: terraform/
+
+  configure:
+    needs: provision
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install Ansible
+        run: pip install ansible
+
+      - name: Wait for EC2 SSH to be ready
+        run: sleep 60                   # ✅ increased — EC2 needs time to boot
+
+      - name: Write SSH private key
+        run: |
+          echo "${{ secrets.EC2_SSH_PRIVATE_KEY }}" > private_key.pem
+          chmod 600 private_key.pem
+
+      - name: Generate Ansible inventory
+        run: |
+          cat > ansible/inventory.ini << EOF
+          [app_servers]
+          ${{ needs.provision.outputs.ec2_ip }} ansible_user=ubuntu ansible_ssh_private_key_file=private_key.pem ansible_ssh_common_args='-o StrictHostKeyChecking=no'
+          EOF
+
+      - name: Verify EC2 reachable      # ✅ ping before running playbook
+        run: |
+          ansible -i ansible/inventory.ini app_servers -m ping
+
+      - name: Run Ansible Playbook
+        run: |
+          ansible-playbook -i ansible/inventory.ini ansible/playbook.yml
+
+  deploy:
+    needs: [provision, configure]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Write SSH private key
+        run: |
+          echo "${{ secrets.EC2_SSH_PRIVATE_KEY }}" > private_key.pem
+          chmod 600 private_key.pem
+
+      - name: Deploy to EC2
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ needs.provision.outputs.ec2_ip }}
+          username: ubuntu
+          key: ${{ secrets.EC2_SSH_PRIVATE_KEY }}
+          script: |
+            echo ${{ secrets.DOCKERHUB_TOKEN }} | docker login \
+              --username ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
+
+            docker pull ${{ secrets.DOCKERHUB_USERNAME }}/my-notes-app:${{ github.sha }}
+
+            docker stop my-notes-app || true
+            docker rm my-notes-app || true
+
+            docker run -d \
+              --name my-notes-app \
+              --restart always \
+              -p 5000:5000 \
+              -v my-notes-data:/app/instance \
+              -e SECRET_KEY=${{ secrets.SECRET_KEY }} \
+              ${{ secrets.DOCKERHUB_USERNAME }}/my-notes-app:${{ github.sha }}
+
+            docker image prune -f
+            docker ps | grep my-notes-app
+
+      - name: Print App URL             # ✅ easy to find after deploy
+        run: |
+          echo "✅ App deployed successfully!"
+          echo "🌐 Access at: http://${{ needs.provision.outputs.ec2_ip }}:5000"

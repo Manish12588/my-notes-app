@@ -1,0 +1,32 @@
+# ansible/roles/docker/tasks/main.yml
+---
+- name: Update apt cache
+  apt:
+    update_cache: yes
+    cache_valid_time: 3600
+
+- name: Install Docker
+  apt:
+    name: docker.io
+    state: present
+
+- name: Enable and start Docker
+  systemd:
+    name: docker
+    enabled: yes
+    state: started
+
+- name: Add ubuntu user to docker group
+  user:
+    name: ubuntu
+    groups: docker
+    append: yes
+
+- name: Verify Docker is running
+  command: docker --version
+  register: docker_version
+  changed_when: false
+
+- name: Print Docker version
+  debug:
+    msg: "{{ docker_version.stdout }}"

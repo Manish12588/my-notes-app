@@ -1,0 +1,3 @@
+# .trivyignore
+# Add CVE IDs here to suppress known/accepted vulnerabilities
+# Leave empty until Trivy reports real CVEs to suppress

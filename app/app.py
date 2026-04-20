@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for, flash, jsonify
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
+from prometheus_flask_exporter import PrometheusMetrics
 from datetime import datetime
 import os
 
@@ -17,6 +18,10 @@ app.config['SQLALCHEMY_DATABASE_URI']        = f'sqlite:///{os.path.join(INSTANC
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db.init_app(app)
+
+# ── Prometheus metrics ─────────────────────────────────────────────────────
+metrics = PrometheusMetrics(app)                          
+metrics.info('app_info', 'My Notes App', version='1.0.0')
 
 login_manager = LoginManager(app)
 login_manager.login_view      = 'login'

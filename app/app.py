@@ -19,8 +19,10 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db.init_app(app)
 
+
 # ── Prometheus metrics ─────────────────────────────────────────────────────
-metrics = PrometheusMetrics(app)                          
+
+metrics = PrometheusMetrics(app)
 metrics.info('app_info', 'My Notes App', version='1.0.0')
 
 login_manager = LoginManager(app)

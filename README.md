@@ -201,3 +201,33 @@ python app/app.py
 | Registry | Docker Hub |
 | Cloud | AWS EC2 (ap-south-1) |
 | Security Scan | Trivy |
+
+## Contributing
+ 
+Contributions are welcome — whether it's fixing a bug, improving the pipeline, or suggesting infrastructure improvements.
+ 
+### How to contribute
+ 
+1. **Fork** the repository
+2. **Create a branch** for your change
+   ```bash
+   git checkout -b feature/your-feature-name
+   ```
+3. **Make your changes** and commit with a clear message
+   ```bash
+   git commit -m "feat: describe what you changed"
+   ```
+4. **Push** to your fork
+   ```bash
+   git push origin feature/your-feature-name
+   ```
+5. **Open a Pull Request** against `main` with a description of what you changed and why
+
+## Connect
+ 
+Modified and maintained by **Manish** — actively learning and building in the DevOps and cloud space.
+ 
+- 💼 [LinkedIn](https://www.linkedin.com/in/kumar05/) — connect if you're working on similar projects or want to discuss DevOps
+- 🐙 [GitHub](https://github.com/Manish12588) — see other projects
+  
+If this project helped you learn something or gave you ideas, a ⭐ on the repo is appreciated.

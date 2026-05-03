@@ -1,115 +1,203 @@
 # NoteVault 📚
- 
-A multi-user learning notes app — each user has their own private, isolated note space.
- 
+
+A production-deployed, multi-user notes application built with a full DevOps pipeline — from infrastructure provisioning to automated deployments.
+
 ![Python](https://img.shields.io/badge/Python-3.12-blue)
 ![Flask](https://img.shields.io/badge/Flask-3.0-green)
 ![Docker](https://img.shields.io/badge/Docker-Containerized-2496ED)
-![SQLite](https://img.shields.io/badge/Database-SQLite-003B57)
- 
+![Terraform](https://img.shields.io/badge/IaC-Terraform-7B42BC)
+![Ansible](https://img.shields.io/badge/Config-Ansible-EE0000)
+![GitHub Actions](https://img.shields.io/badge/CI%2FCD-GitHub%20Actions-2088FF)
+![AWS](https://img.shields.io/badge/Cloud-AWS-FF9900)
+
 ---
 
-## Tech Stack
-- **Backend**: Python 3 + Flask
-- **Database**: SQLite (zero-config, file-based via SQLAlchemy)
-- **ORM**: Flask-SQLAlchemy
-- **Auth**: Flask-Login + Werkzeug password hashing
-- **Frontend**: HTML5, Vanilla CSS (Flexbox/Grid), Google Fonts (DM Serif Display + DM Sans)
+## What This Project Demonstrates
 
-## Project Structure
+This isn't just a web app — it's a full DevOps workflow built around a simple Flask application:
+
+| Layer | Tool | What it does |
+|---|---|---|
+| Application | Python + Flask | Multi-user notes with auth, search, pinning |
+| Containerization | Docker + Docker Compose | Multistage build, optimized image |
+| Infrastructure | Terraform | EC2, VPC, Security Groups on AWS |
+| Configuration | Ansible | Server setup, Docker install, app deployment |
+| CI/CD | GitHub Actions | Lint → Test → Build → Push → Deploy |
+| Security | Trivy | Container image vulnerability scanning |
+
+---
+
+## Architecture
+
 ```
-Notes-app/
-├── docker-compose.yml            # Docker Compose configuration
-├── .dockerignore                 # Files excluded from Docker build
-├── .gitignore                    # Files excluded from Git
-├── app.py                        # Main Flask application and routing
-├── models.py                     # SQLAlchemy database models (User, Note)
-├── requirements.txt              # Python package dependencies
-├── README.md                     # Project documentation
+GitHub Push
+    │
+    ▼
+┌─────────────────────────────────────┐
+│         GitHub Actions Pipeline      │
+│  lint → test → build → scan → push  │
+└──────────────────┬──────────────────┘
+                   │ Docker image → Docker Hub
+                   ▼
+┌─────────────────────────────────────┐
+│           AWS (ap-south-1)           │
+│                                      │
+│  ┌─────────┐     ┌────────────────┐ │
+│  │ Terraform│────▶│  EC2 Instance  │ │
+│  │  (IaC)  │     │                │ │
+│  └─────────┘     │  Ansible ────▶ │ │
+│                  │  configures    │ │
+│                  │  Docker +      │ │
+│                  │  pulls image   │ │
+│                  └────────────────┘ │
+└─────────────────────────────────────┘
+```
+
+---
+
+## Repository Structure
+
+```
+my-notes-app/
+├── .github/
+│   └── workflows/
+│       └── ci-cd.yml             # GitHub Actions pipeline
+├── ansible/
+│   ├── inventory/                # EC2 host inventory
+│   ├── playbooks/                # Server setup + deployment playbooks
+│   └── roles/                    # Reusable Ansible roles
+├── app/
+│   ├── app.py                    # Flask app + routing
+│   ├── models.py                 # SQLAlchemy models (User, Note)
+│   ├── requirements.txt          # Python dependencies
+│   ├── static/style.css          # Custom CSS
+│   └── templates/                # Jinja2 HTML templates
 ├── docker/
-│   ├── Dockerfile                # Single stage Docker build
-│   └── Dockerfile.multistage     # Optimized multistage Docker build
-├── static/
-│   └── style.css                 # Custom styling and animations
-└── templates/
-    ├── base.html                 # Base layout (navbar, footer, flash messages)
-    ├── index.html                # Note dashboard and search interface
-    ├── register.html             # User registration form
-    ├── login.html                # User login form
-    ├── add_note.html             # Note creation form
-    ├── edit_note.html            # Note editing form
-    └── view_note.html            # Full-screen note viewer
+│   ├── Dockerfile                # Single-stage build
+│   └── Dockerfile.multistage     # Optimized multistage build
+├── terraform/
+│   ├── main.tf                   # EC2 + VPC + Security Group resources
+│   ├── variables.tf              # Input variables
+│   ├── outputs.tf                # EC2 public IP output
+│   └── terraform.tfvars          # Variable values (not committed)
+├── docker-compose.yml            # Local development compose
+├── .dockerignore
+├── .trivyignore                  # Trivy scan exceptions
+└── .flake8                       # Python linting config
 ```
 
-## Features
+---
+
+## CI/CD Pipeline (GitHub Actions)
+
+On every push to `main`:
+
+1. **Lint** — flake8 checks Python code style
+2. **Test** — runs unit tests
+3. **Build** — builds Docker image using multistage Dockerfile
+4. **Scan** — Trivy scans image for vulnerabilities
+5. **Push** — pushes image to Docker Hub
+6. **Deploy** — Ansible pulls the new image on EC2 and restarts the container
+
+Secrets managed via GitHub Actions secrets: `DOCKER_USERNAME`, `DOCKER_PASSWORD`, `EC2_SSH_KEY`, `EC2_HOST`.
+
+---
+
+## Infrastructure (Terraform)
+
+Provisions on AWS `ap-south-1`:
+
+- VPC with public subnet
+- EC2 instance (Ubuntu)
+- Security Group (ports 22, 80, 5000)
+- Outputs EC2 public IP for Ansible inventory
+
+```bash
+cd terraform
+terraform init
+terraform plan
+terraform apply
+```
+
+---
+
+## Configuration Management (Ansible)
+
+After Terraform provisions the EC2 instance, Ansible:
+
+- Installs Docker and dependencies
+- Pulls the latest image from Docker Hub
+- Runs the container with correct port and volume mappings
+
+```bash
+cd ansible
+ansible-playbook -i inventory/hosts playbooks/deploy.yml
+```
+
+---
+
+## Application Features
+
 - 🔐 User registration & login — each user sees **only their own notes**
-- ✏️ Create, view, edit and delete notes
+- ✏️ Create, view, edit, and delete notes
 - 📌 Pin important notes to the top
 - 🏷️ Custom categories with sidebar filtering
 - 🔍 Full-text search across title and content
 - 📊 Live word & character count in editor
 - 📱 Responsive design — mobile friendly
-- 🐳 Dockerized with optimized multistage build
 
-## Setup
+---
 
-## Running Locally (Without Docker)
- 
+## Running Locally
+
+### With Docker Compose (Recommended)
+
 ```bash
-# 1. (Optional) Create virtual environment
-python -m venv venv
-source venv/bin/activate     # Windows: venv\Scripts\activate
-
-# 1. Install dependencies
-pip install -r requirements.txt
- 
-# 2. Run the app
-python app.py
- 
-# 3. Open in browser
-http://127.0.0.1:5000
-```
-The SQLite database (`notes.db`) is created automatically on first run inside an `instance/` folder.
-
-## Running With Docker
- 
-### Option 1 — Docker Compose (Recommended)
- 
-```bash
-# Build and start
 docker compose up -d --build
- 
-# View logs
-docker compose logs -f
- 
-# Stop
-docker compose down
+# Open: http://localhost:5000
 ```
 
-### Option 2 — Docker Run
- 
+### Without Docker
+
 ```bash
-# Build the image
-docker build -f docker/Dockerfile.multistage -t my-notes-app .
- 
-# Run the container (PowerShell)
-docker run -d -p 5000:5000 -v ${PWD}/instance:/app/instance --name my-notes my-notes-app:latest
- 
-# Run the container (CMD)
-docker run -d -p 5000:5000 -v %cd%/instance:/app/instance --name my-notes my-notes-app:latest
+python -m venv venv
+source venv/bin/activate
+pip install -r app/requirements.txt
+python app/app.py
+# Open: http://127.0.0.1:5000
 ```
 
-**Then open:** http://localhost:5000
+---
 
-## Routes
-| Method   | Route               | Description                      |
-| -------- | ------------------- | -------------------------------- |
-| GET/POST | `/register`         | Create a new account             |
-| GET/POST | `/login`            | Log in                           |
-| GET      | `/logout`           | Log out                          |
-| GET      | `/`                 | Dashboard (with search & filter) |
-| GET/POST | `/note/add`         | Create a note                    |
-| GET      | `/note/<id>`        | View a note                      |
-| GET/POST | `/note/<id>/edit`   | Edit a note                      |
-| POST     | `/note/<id>/delete` | Delete a note                    |
-| POST     | `/note/<id>/pin`    | Toggle pin (JSON)                |
+## API Routes
+
+| Method | Route | Description |
+|---|---|---|
+| GET/POST | `/register` | Create a new account |
+| GET/POST | `/login` | Log in |
+| GET | `/logout` | Log out |
+| GET | `/` | Dashboard (search & filter) |
+| GET/POST | `/note/add` | Create a note |
+| GET | `/note/<id>` | View a note |
+| GET/POST | `/note/<id>/edit` | Edit a note |
+| POST | `/note/<id>/delete` | Delete a note |
+| POST | `/note/<id>/pin` | Toggle pin |
+
+---
+
+## Tech Stack
+
+| Category | Technology |
+|---|---|
+| Language | Python 3.12 |
+| Framework | Flask 3.0 |
+| Database | SQLite via SQLAlchemy |
+| Auth | Flask-Login + Werkzeug |
+| Container | Docker (multistage) |
+| Orchestration | Docker Compose |
+| IaC | Terraform |
+| Config Mgmt | Ansible |
+| CI/CD | GitHub Actions |
+| Registry | Docker Hub |
+| Cloud | AWS EC2 (ap-south-1) |
+| Security Scan | Trivy |

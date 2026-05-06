@@ -1,0 +1,7 @@
+langchain-ollama        # ChatOllama — runs Ollama models in LangChain
+langchain               # create_agent — agent framework
+langchain-core          # @tool decorator, AIMessage
+langgraph               # ReAct loop execution engine
+selenium                # Browser automation for DOM capture
+webdriver-manager       # Auto-downloads matching ChromeDriver
+beautifulsoup4

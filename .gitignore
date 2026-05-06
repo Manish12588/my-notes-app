@@ -45,4 +45,4 @@ ansible/inventory.ini
 notes-error.txt
 
 # ── Test Reports ─────────────────────────────────
-reports/
+**/reports/

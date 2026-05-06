@@ -43,3 +43,6 @@ ansible/inventory.ini
 
 # ── Misc ─────────────────────────────────
 notes-error.txt
+
+# ── Test Reports ─────────────────────────────────
+reports/

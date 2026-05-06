@@ -2,3 +2,5 @@ selenium
 pytest
 webdriver-manager
 requests
+pytest-html
+allure-pytest

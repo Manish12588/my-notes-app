@@ -94,19 +94,20 @@ def ask_llm_for_fix(broken_locator, dom_elements, page):
 
     prompt = f"""You are a test automation expert.
 
-A Selenium test is failing because this locator does not exist on the page:
-BROKEN: {broken_locator}
+        A Selenium test is failing because this locator does not exist on the page:
+        BROKEN: {broken_locator}
 
-Here are the actual elements found on the {page} page:
-{dom_elements}
+        Here are the actual elements found on the {page} page:
+        {dom_elements}
 
-What is the correct replacement locator?
-Reply with ONLY the replacement string in this exact format:
-By.ID, "correct-id"
-or
-By.CSS_SELECTOR, "correct-selector"
+        What is the correct replacement locator?
+        Reply with ONLY the replacement string in this exact format:
+        By.ID, "correct-id"
+        or
+        By.CSS_SELECTOR, "correct-selector"
 
-Nothing else. No explanation."""
+        Nothing else. No explanation.
+        """
 
     response = llm.invoke(prompt)
     return response.content.strip()
